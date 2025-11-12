@@ -6,23 +6,15 @@ A simple Stonefish simulator demonstrating a bouncing ball on a flat surface.
 
 Install Stonefish as described in the [official documentation](https://stonefish.readthedocs.io/en/latest/install.html).
 
-## Building
+## Quick Start
 
 ```bash
-mkdir build
-cd build
-cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
-make
+make setup    # First time only
+make build    # Compile the simulator
+make run      # Run the simulator
 ```
 
-**Note:** The `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` flag generates a `compile_commands.json` file for VS Code IntelliSense. The `.vscode/c_cpp_properties.json` file is already configured to use it.
-
-## Running
-
-```bash
-cd build
-./bouncing_ball
-```
+Run `make` without arguments to see all available commands.
 
 ## Controls
 
