@@ -11,9 +11,11 @@ Install Stonefish as described in the [official documentation](https://stonefish
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
 make
 ```
+
+**Note:** The `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` flag generates a `compile_commands.json` file for VS Code IntelliSense. The `.vscode/c_cpp_properties.json` file is already configured to use it.
 
 ## Running
 
