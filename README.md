@@ -1,6 +1,6 @@
 # Bouncing Ball Simulator
 
-A simple Stonefish simulator demonstrating a bouncing ball on a flat surface.
+A simple Stonefish simulator demonstrating a ball in the ocean.
 
 ## Prerequisites
 
