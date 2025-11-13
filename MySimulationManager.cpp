@@ -20,12 +20,16 @@ void MySimulationManager::BuildScenario()
     EnableOcean(0.0, water); // 0.0 = no waves
 
     // Physical materials
-    // Make a light material (500 kg/m³) so it floats in water (1000 kg/m³)
+    // Make a light material (500 kg/m³) so sphere floats in water (1000 kg/m³)
     CreateMaterial("Foam", 500.0, 0.8);
+    // Make AUV material close to water density for neutral buoyancy (less bouncy)
+    CreateMaterial("AUVBody", 950.0, 0.9); // Nearly neutral buoyancy
     CreateMaterial("Steel", 7810.0, 0.9);
     SetMaterialsInteraction("Foam", "Foam", 0.7, 0.5);
+    SetMaterialsInteraction("AUVBody", "AUVBody", 0.4, 0.3);
     SetMaterialsInteraction("Steel", "Steel", 0.4, 0.2);
     SetMaterialsInteraction("Foam", "Steel", 0.6, 0.4);
+    SetMaterialsInteraction("AUVBody", "Steel", 0.5, 0.3);
 
     // Graphical materials (looks)
     CreateLook("gray", sf::Color::Gray(0.5f), 0.3f, 0.2f);
@@ -39,7 +43,7 @@ void MySimulationManager::BuildScenario()
     sf::BodyPhysicsSettings sphere_physics;
     sphere_physics.mode = sf::BodyPhysicsMode::SUBMERGED;
     sf::Sphere *sph = new sf::Sphere("FloatingBall", sphere_physics, 0.2, sf::I4(), "Foam", "red");
-    AddSolidEntity(sph, sf::Transform(sf::IQ(), sf::Vector3(0.0, 0.0, -1.0)));
+    AddSolidEntity(sph, sf::Transform(sf::IQ(), sf::Vector3(0.0, 1.0, -2.0)));
 
     // Create AUV-like cylinder (horizontal orientation)
     // SUBMERGED mode enables full hydrodynamics (buoyancy, drag, etc.)
@@ -51,7 +55,7 @@ void MySimulationManager::BuildScenario()
     sf::Quaternion rotation = sf::Quaternion::getIdentity();
     rotation.setEulerZYX(sf::Scalar(0), sf::Scalar(M_PI / 2.0), sf::Scalar(0)); // Rotate 90° around Y to make it horizontal
 
-    sf::Cylinder *auv = new sf::Cylinder("SimpleAUV", phy, 0.1, 0.6, sf::I4(), "Foam", "yellow");
+    sf::Cylinder *auv = new sf::Cylinder("SimpleAUV", phy, 0.1, 0.6, sf::I4(), "AUVBody", "yellow");
     AddSolidEntity(auv, sf::Transform(rotation, sf::Vector3(0.0, 0.0, -1.0)));
 
     // Add a simple push actuator (thruster) at the back
