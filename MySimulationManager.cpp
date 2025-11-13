@@ -35,6 +35,8 @@ void MySimulationManager::BuildScenario()
     CreateLook("gray", sf::Color::Gray(0.5f), 0.3f, 0.2f);
     CreateLook("yellow", sf::Color::RGB(1.f, 1.f, 0.f), 0.3f, 0.1f);
     CreateLook("red", sf::Color::RGB(1.f, 0.f, 0.f), 0.3f, 0.1f);
+    CreateLook("green", sf::Color::RGB(0.f, 1.f, 0.f), 0.3f, 0.1f);
+    CreateLook("blue", sf::Color::RGB(0.f, 0.f, 1.f), 0.3f, 0.1f);
 
     // No ocean floor needed for floating test
     // sf::Plane *plane = new sf::Plane("SeaFloor", 10000.0, "Steel", "gray");
@@ -58,24 +60,31 @@ void MySimulationManager::BuildScenario()
     sf::Cylinder *auv = new sf::Cylinder("SimpleAUV", phy, 0.1, 0.6, sf::I4(), "AUVBody", "yellow");
     AddSolidEntity(auv, sf::Transform(rotation, sf::Vector3(0.0, 0.0, -1.0)));
 
-    // Add visual marker (red sphere) at the thruster location (center of mass)
-    sf::BodyPhysicsSettings markerPhy;
-    markerPhy.mode = sf::BodyPhysicsMode::SUBMERGED;
-    markerPhy.collisions = false; // No collisions - just visual
-    sf::Sphere *thrusterMarker = new sf::Sphere("ThrusterMarker", markerPhy, 0.03, sf::I4(), "Foam", "red");
-    // Attach at center of AUV
-    AddSolidEntity(thrusterMarker, sf::Transform(sf::IQ(), sf::Vector3(0.0, 0.0, -1.0)));
+    // Add main thruster at CENTER for pure forward thrust
+    sf::Quaternion mainThrusterRot = sf::Quaternion::getIdentity();
+    mainThrusterRot.setEulerZYX(sf::Scalar(0), sf::Scalar(-M_PI / 2.0), sf::Scalar(0)); // Z points along +X
 
-    // Add a push actuator (thruster) at the CENTER OF MASS
-    // This ensures pure forward thrust without rotation
-    // Push actuator applies force along its local Z-axis
-    // We need to rotate it so Z points forward (along +X in world when cylinder is horizontal)
-    sf::Quaternion thrusterRot = sf::Quaternion::getIdentity();
-    thrusterRot.setEulerZYX(sf::Scalar(0), sf::Scalar(-M_PI / 2.0), sf::Scalar(0)); // Rotate so Z points along +X
+    sf::Push *mainThruster = new sf::Push("MainThruster", false);
+    mainThruster->setForceLimits(-10.0, 20.0);
+    mainThruster->AttachToSolid(auv, sf::Transform(mainThrusterRot, sf::Vector3(0.0, 0.0, 0.0)));
+    AddActuator(mainThruster);
 
-    sf::Push *thruster = new sf::Push("MainThruster", false);
-    thruster->setForceLimits(-10.0, 20.0); // -10 to +20 Newton thrust (more forward than reverse)
-    // Attach at CENTER of AUV (0, 0, 0) so thrust goes through center of mass - no rotation!
-    thruster->AttachToSolid(auv, sf::Transform(thrusterRot, sf::Vector3(0.0, 0.0, 0.0)));
-    AddActuator(thruster);
+    // Add steering thrusters on the SIDES near the back
+    // LEFT thruster (positive Y side) - pushes left to turn right
+    sf::Quaternion leftThrusterRot = sf::Quaternion::getIdentity();
+    leftThrusterRot.setEulerZYX(sf::Scalar(M_PI / 2.0), sf::Scalar(0), sf::Scalar(0)); // Z points in -Y
+
+    sf::Push *leftThruster = new sf::Push("LeftThruster", false);
+    leftThruster->setForceLimits(0.0, 5.0); // 0-5N for steering
+    leftThruster->AttachToSolid(auv, sf::Transform(leftThrusterRot, sf::Vector3(-0.2, 0.12, 0.0)));
+    AddActuator(leftThruster);
+
+    // RIGHT thruster (negative Y side) - pushes right to turn left
+    sf::Quaternion rightThrusterRot = sf::Quaternion::getIdentity();
+    rightThrusterRot.setEulerZYX(sf::Scalar(-M_PI / 2.0), sf::Scalar(0), sf::Scalar(0)); // Z points in +Y
+
+    sf::Push *rightThruster = new sf::Push("RightThruster", false);
+    rightThruster->setForceLimits(0.0, 5.0); // 0-5N for steering
+    rightThruster->AttachToSolid(auv, sf::Transform(rightThrusterRot, sf::Vector3(-0.2, -0.12, 0.0)));
+    AddActuator(rightThruster);
 }

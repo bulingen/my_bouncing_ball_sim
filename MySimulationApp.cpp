@@ -12,40 +12,60 @@ void MySimulationApp::KeyDown(SDL_Event *event)
     // Call base class to keep default functionality (camera movement, etc.)
     GraphicalSimulationApp::KeyDown(event);
 
-    // Get the thruster
-    sf::Push *thruster = (sf::Push *)getSimulationManager()->getActuator("MainThruster");
+    // Get thrusters
+    sf::Push *mainThruster = (sf::Push *)getSimulationManager()->getActuator("MainThruster");
+    sf::Push *leftThruster = (sf::Push *)getSimulationManager()->getActuator("LeftThruster");
+    sf::Push *rightThruster = (sf::Push *)getSimulationManager()->getActuator("RightThruster");
 
-    if (thruster != nullptr)
+    switch (event->key.keysym.sym)
     {
-        switch (event->key.keysym.sym)
-        {
-        case SDLK_UP:
-            // Forward thrust
-            thruster->setForce(20.0); // 20N forward
-            break;
+    case SDLK_UP:
+        if (mainThruster)
+            mainThruster->setForce(20.0); // Forward
+        break;
 
-        case SDLK_DOWN:
-            // Reverse thrust
-            thruster->setForce(-10.0); // 10N backward
-            break;
-        }
+    case SDLK_DOWN:
+        if (mainThruster)
+            mainThruster->setForce(-10.0); // Reverse
+        break;
+
+    case SDLK_LEFT:
+        // Turn left: fire RIGHT thruster (pushes right side, turns left)
+        if (rightThruster)
+            rightThruster->setForce(5.0);
+        break;
+
+    case SDLK_RIGHT:
+        // Turn right: fire LEFT thruster (pushes left side, turns right)
+        if (leftThruster)
+            leftThruster->setForce(5.0);
+        break;
     }
 }
 
 void MySimulationApp::KeyUp(SDL_Event *event)
 {
-    // Get the thruster
-    sf::Push *thruster = (sf::Push *)getSimulationManager()->getActuator("MainThruster");
+    // Get thrusters
+    sf::Push *mainThruster = (sf::Push *)getSimulationManager()->getActuator("MainThruster");
+    sf::Push *leftThruster = (sf::Push *)getSimulationManager()->getActuator("LeftThruster");
+    sf::Push *rightThruster = (sf::Push *)getSimulationManager()->getActuator("RightThruster");
 
-    if (thruster != nullptr)
+    switch (event->key.keysym.sym)
     {
-        switch (event->key.keysym.sym)
-        {
-        case SDLK_UP:
-        case SDLK_DOWN:
-            // Stop thrust when key released
-            thruster->setForce(0.0);
-            break;
-        }
+    case SDLK_UP:
+    case SDLK_DOWN:
+        if (mainThruster)
+            mainThruster->setForce(0.0);
+        break;
+
+    case SDLK_LEFT:
+        if (rightThruster)
+            rightThruster->setForce(0.0);
+        break;
+
+    case SDLK_RIGHT:
+        if (leftThruster)
+            leftThruster->setForce(0.0);
+        break;
     }
 }
