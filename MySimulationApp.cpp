@@ -21,12 +21,12 @@ void MySimulationApp::KeyDown(SDL_Event *event)
         {
         case SDLK_UP:
             // Forward thrust
-            thruster->setForce(10.0); // 10N forward
+            thruster->setForce(20.0); // 20N forward
             break;
 
         case SDLK_DOWN:
             // Reverse thrust
-            thruster->setForce(-5.0); // 5N backward
+            thruster->setForce(-10.0); // 10N backward
             break;
         }
     }
