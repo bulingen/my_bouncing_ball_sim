@@ -1,5 +1,6 @@
 #include <Stonefish/core/GraphicalSimulationApp.h>
 #include "MySimulationManager.h"
+#include "MySimulationApp.h"
 
 int main(int argc, char **argv)
 {
@@ -8,7 +9,7 @@ int main(int argc, char **argv)
     sf::HelperSettings h;
 
     MySimulationManager manager(500.0);
-    sf::GraphicalSimulationApp app("Simple simulator", "path_to_data", s, h, &manager);
+    MySimulationApp app("Simple AUV Simulator", "path_to_data", s, h, &manager);
     app.Run();
 
     return 0;

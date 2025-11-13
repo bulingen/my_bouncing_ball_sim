@@ -11,6 +11,7 @@ find_package(Stonefish REQUIRED)
 add_executable(bouncing_ball
     main.cpp
     MySimulationManager.cpp
+    MySimulationApp.cpp
 )
 
 # Link against Stonefish (includes headers automatically)
