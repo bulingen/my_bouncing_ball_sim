@@ -4,8 +4,11 @@
 
 int main(int argc, char **argv)
 {
-    // Using default settings
+    // Configure render settings for larger window
     sf::RenderSettings s;
+    s.windowW = 1200; // Increase from default 800
+    s.windowH = 800;  // Increase from default 600
+
     sf::HelperSettings h;
 
     MySimulationManager manager(500.0);
