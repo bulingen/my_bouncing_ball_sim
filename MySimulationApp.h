@@ -10,6 +10,16 @@ public:
 
     void KeyDown(SDL_Event *event) override;
     void KeyUp(SDL_Event *event) override;
+
+private:
+    void UpdateDirection();
+
+    bool upPressed = false;
+    bool downPressed = false;
+    bool leftPressed = false;
+    bool rightPressed = false;
+
+    std::string currentState = "stop";
 };
 
 #endif
