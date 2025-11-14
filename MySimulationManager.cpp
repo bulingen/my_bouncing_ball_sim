@@ -52,12 +52,12 @@ void MySimulationManager::BuildScenario()
     sf::BodyPhysicsSettings phy;
     phy.mode = sf::BodyPhysicsMode::SUBMERGED;
 
-    // Create cylinder: radius=0.1m, length=0.6m (torpedo-like shape)
+    // Create cylinder: radius=0.05m, length=1.0m (torpedo-like shape)
     // Cylinder's z-axis is its length, so we rotate it to be horizontal (along x-axis)
     sf::Quaternion rotation = sf::Quaternion::getIdentity();
     rotation.setEulerZYX(sf::Scalar(0), sf::Scalar(M_PI / 2.0), sf::Scalar(0)); // Rotate 90° around Y to make it horizontal
 
-    sf::Cylinder *auv = new sf::Cylinder("SimpleAUV", phy, 0.1, 0.6, sf::I4(), "AUVBody", "yellow");
+    sf::Cylinder *auv = new sf::Cylinder("SimpleAUV", phy, 0.05, 1.0, sf::I4(), "AUVBody", "yellow");
     AddSolidEntity(auv, sf::Transform(rotation, sf::Vector3(0.0, 0.0, -1.0)));
 
     // Add main thruster at CENTER for pure forward thrust
