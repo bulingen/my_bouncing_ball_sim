@@ -3,6 +3,7 @@
 #include <Stonefish/entities/solids/Box.h>
 #include <Stonefish/entities/solids/Sphere.h>
 #include <Stonefish/actuators/Push.h>
+#include <Stonefish/joints/FixedJoint.h>
 
 MySimulationManager::MySimulationManager(sf::Scalar stepsPerSecond) : SimulationManager(stepsPerSecond)
 {
@@ -25,11 +26,13 @@ void MySimulationManager::BuildScenario()
     // Make AUV material close to water density for neutral buoyancy (less bouncy)
     CreateMaterial("AUVBody", 950.0, 0.9); // Nearly neutral buoyancy
     CreateMaterial("Steel", 7810.0, 0.9);
+    CreateMaterial("Lead", 1340.0, 0.9); // Heavy ballast material
     SetMaterialsInteraction("Foam", "Foam", 0.7, 0.5);
     SetMaterialsInteraction("AUVBody", "AUVBody", 0.4, 0.3);
     SetMaterialsInteraction("Steel", "Steel", 0.4, 0.2);
     SetMaterialsInteraction("Foam", "Steel", 0.6, 0.4);
     SetMaterialsInteraction("AUVBody", "Steel", 0.5, 0.3);
+    SetMaterialsInteraction("Lead", "Lead", 0.4, 0.3);
 
     // Graphical materials (looks)
     CreateLook("gray", sf::Color::Gray(0.5f), 0.3f, 0.2f);
@@ -52,7 +55,10 @@ void MySimulationManager::BuildScenario()
     sf::BodyPhysicsSettings phy;
     phy.mode = sf::BodyPhysicsMode::SUBMERGED;
 
-    sf::Box *auv = new sf::Box("SimpleAUV", phy, sf::Vector3(1.0, 0.1, 0.1), sf::I4(), "AUVBody", "yellow");
+    // Shift origin to lower center of mass - shift origin upward in local frame (negative Z)
+    sf::Transform boxOrigin(sf::IQ(), sf::Vector3(0.0, 0.0, -0.04)); // Shift COM 2cm lower
+
+    sf::Box *auv = new sf::Box("SimpleAUV", phy, sf::Vector3(1.0, 0.1, 0.1), boxOrigin, "AUVBody", "yellow");
     AddSolidEntity(auv, sf::Transform(sf::IQ(), sf::Vector3(0.0, 0.0, -1.0)));
 
     // Thruster location in box's local frame
