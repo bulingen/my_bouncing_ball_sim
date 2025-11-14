@@ -14,13 +14,37 @@ void MySimulationApp::UpdateDirection()
 
     if (upPressed)
     {
-        if (leftPressed)
+        if (leftPressed && homePressed)
+        {
+            newState = "left up";
+        }
+        else if (leftPressed && endPressed)
+        {
+            newState = "left down";
+        }
+        else if (rightPressed && homePressed)
+        {
+            newState = "right up";
+        }
+        else if (rightPressed && endPressed)
+        {
+            newState = "right down";
+        }
+        else if (leftPressed)
         {
             newState = "left";
         }
         else if (rightPressed)
         {
             newState = "right";
+        }
+        else if (homePressed)
+        {
+            newState = "up";
+        }
+        else if (endPressed)
+        {
+            newState = "down";
         }
         else
         {
@@ -103,6 +127,22 @@ void MySimulationApp::UpdateDirection()
                 mainThruster->setRelativeActuatorFrame(sf::Transform(rot, sf::Vector3(-0.5, 0.0, 0.0)));
                 mainThruster->setForce(-4.0);
             }
+            else if (newState == "up")
+            {
+                // Pitch up - rotate around Y-axis
+                sf::Quaternion rot;
+                rot.setEulerZYX(0, steeringAngle, -M_PI / 2.0);
+                mainThruster->setRelativeActuatorFrame(sf::Transform(rot, sf::Vector3(-0.5, 0.0, 0.0)));
+                mainThruster->setForce(8.0);
+            }
+            else if (newState == "down")
+            {
+                // Pitch down - rotate around Y-axis (negative)
+                sf::Quaternion rot;
+                rot.setEulerZYX(0, -steeringAngle, -M_PI / 2.0);
+                mainThruster->setRelativeActuatorFrame(sf::Transform(rot, sf::Vector3(-0.5, 0.0, 0.0)));
+                mainThruster->setForce(8.0);
+            }
             else if (newState == "stop")
             {
                 mainThruster->setForce(0.0);
@@ -145,6 +185,16 @@ void MySimulationApp::KeyDown(SDL_Event *event)
         rightPressed = true;
         UpdateDirection();
         break;
+
+    case SDLK_HOME:
+        homePressed = true;
+        UpdateDirection();
+        break;
+
+    case SDLK_END:
+        endPressed = true;
+        UpdateDirection();
+        break;
     }
 }
 
@@ -176,6 +226,16 @@ void MySimulationApp::KeyUp(SDL_Event *event)
 
     case SDLK_RIGHT:
         rightPressed = false;
+        UpdateDirection();
+        break;
+
+    case SDLK_HOME:
+        homePressed = false;
+        UpdateDirection();
+        break;
+
+    case SDLK_END:
+        endPressed = false;
         UpdateDirection();
         break;
     }

@@ -18,6 +18,8 @@ private:
     bool downPressed = false;
     bool leftPressed = false;
     bool rightPressed = false;
+    bool homePressed = false; // Pitch up
+    bool endPressed = false;  // Pitch down
 
     std::string currentState = "stop";
 };

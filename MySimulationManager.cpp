@@ -24,7 +24,7 @@ void MySimulationManager::BuildScenario()
     // Make a light material (500 kg/m³) so sphere floats in water (1000 kg/m³)
     CreateMaterial("Foam", 500.0, 0.8);
     // Make AUV material close to water density for neutral buoyancy (less bouncy)
-    CreateMaterial("AUVBody", 950.0, 0.9); // Nearly neutral buoyancy
+    CreateMaterial("AUVBody", 999.0, 0.9); // Nearly neutral buoyancy
     CreateMaterial("Steel", 7810.0, 0.9);
     CreateMaterial("Lead", 1340.0, 0.9); // Heavy ballast material
     SetMaterialsInteraction("Foam", "Foam", 0.7, 0.5);
