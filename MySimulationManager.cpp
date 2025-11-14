@@ -1,6 +1,6 @@
 #include "MySimulationManager.h"
 #include <Stonefish/entities/statics/Plane.h>
-#include <Stonefish/entities/solids/Cylinder.h>
+#include <Stonefish/entities/solids/Box.h>
 #include <Stonefish/entities/solids/Sphere.h>
 #include <Stonefish/actuators/Push.h>
 
@@ -47,44 +47,23 @@ void MySimulationManager::BuildScenario()
     sf::Sphere *sph = new sf::Sphere("FloatingBall", sphere_physics, 0.2, sf::I4(), "Foam", "red");
     AddSolidEntity(sph, sf::Transform(sf::IQ(), sf::Vector3(0.0, 1.0, -2.0)));
 
-    // Create AUV-like cylinder (horizontal orientation)
-    // SUBMERGED mode enables full hydrodynamics (buoyancy, drag, etc.)
+    // Create AUV as a box (1m long, 0.1m wide, 0.1m tall)
+    // Box naturally has X=length, Y=width, Z=height - aligned with world frame
     sf::BodyPhysicsSettings phy;
     phy.mode = sf::BodyPhysicsMode::SUBMERGED;
 
-    // Create cylinder: radius=0.05m, length=1.0m (torpedo-like shape)
-    // Cylinder's z-axis is its length, so we rotate it to be horizontal (along x-axis)
-    sf::Quaternion rotation = sf::Quaternion::getIdentity();
-    rotation.setEulerZYX(sf::Scalar(0), sf::Scalar(M_PI / 2.0), sf::Scalar(0)); // Rotate 90° around Y to make it horizontal
+    sf::Box *auv = new sf::Box("SimpleAUV", phy, sf::Vector3(1.0, 0.1, 0.1), sf::I4(), "AUVBody", "yellow");
+    AddSolidEntity(auv, sf::Transform(sf::IQ(), sf::Vector3(0.0, 0.0, -1.0)));
 
-    sf::Cylinder *auv = new sf::Cylinder("SimpleAUV", phy, 0.05, 1.0, sf::I4(), "AUVBody", "yellow");
-    AddSolidEntity(auv, sf::Transform(rotation, sf::Vector3(0.0, 0.0, -1.0)));
+    // Thruster location in box's local frame
+    sf::Quaternion thrusterRotation = sf::Quaternion::getIdentity();
+    thrusterRotation.setEulerZYX(0, 0, M_PI / 2.0); // 90° rotation around Y-axis
+    sf::Transform thrusterTransform(thrusterRotation, sf::Vector3(-0.5, 0.0, 0.0));
+    // sf::Transform thrusterTransform(sf::IQ(), sf::Vector3(0.0, 0.0, -0.5));
 
-    // Add main thruster at CENTER for pure forward thrust
-    sf::Quaternion mainThrusterRot = sf::Quaternion::getIdentity();
-    mainThrusterRot.setEulerZYX(sf::Scalar(0), sf::Scalar(-M_PI / 2.0), sf::Scalar(0)); // Z points along +X
-
+    // Add thruster at back - pushes along +X (forward)
     sf::Push *mainThruster = new sf::Push("MainThruster", false);
-    mainThruster->setForceLimits(-10.0, 20.0);
-    mainThruster->AttachToSolid(auv, sf::Transform(mainThrusterRot, sf::Vector3(0.0, 0.0, 0.0)));
+    mainThruster->setForceLimits(-10.0, 30.0);
+    mainThruster->AttachToSolid(auv, thrusterTransform);
     AddActuator(mainThruster);
-
-    // Add steering thrusters on the SIDES near the back
-    // LEFT thruster (positive Y side) - pushes left to turn right
-    sf::Quaternion leftThrusterRot = sf::Quaternion::getIdentity();
-    leftThrusterRot.setEulerZYX(sf::Scalar(M_PI / 2.0), sf::Scalar(0), sf::Scalar(0)); // Z points in -Y
-
-    sf::Push *leftThruster = new sf::Push("LeftThruster", false);
-    leftThruster->setForceLimits(0.0, 5.0); // 0-5N for steering
-    leftThruster->AttachToSolid(auv, sf::Transform(leftThrusterRot, sf::Vector3(-0.2, 0.12, 0.0)));
-    AddActuator(leftThruster);
-
-    // RIGHT thruster (negative Y side) - pushes right to turn left
-    sf::Quaternion rightThrusterRot = sf::Quaternion::getIdentity();
-    rightThrusterRot.setEulerZYX(sf::Scalar(-M_PI / 2.0), sf::Scalar(0), sf::Scalar(0)); // Z points in +Y
-
-    sf::Push *rightThruster = new sf::Push("RightThruster", false);
-    rightThruster->setForceLimits(0.0, 5.0); // 0-5N for steering
-    rightThruster->AttachToSolid(auv, sf::Transform(rightThrusterRot, sf::Vector3(-0.2, -0.12, 0.0)));
-    AddActuator(rightThruster);
 }
