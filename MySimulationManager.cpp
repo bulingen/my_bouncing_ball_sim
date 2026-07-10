@@ -45,31 +45,31 @@ void MySimulationManager::BuildScenario()
     // sf::Plane *plane = new sf::Plane("SeaFloor", 10000.0, "Steel", "gray");
     // AddStaticEntity(plane, sf::Transform(sf::IQ(), sf::Vector3(0.0, 0.0, -50.0)));
 
-    sf::BodyPhysicsSettings sphere_physics;
-    sphere_physics.mode = sf::BodyPhysicsMode::SUBMERGED;
-    sf::Sphere *sph = new sf::Sphere("FloatingBall", sphere_physics, 0.2, sf::I4(), "Foam", "red");
-    AddSolidEntity(sph, sf::Transform(sf::IQ(), sf::Vector3(0.0, 1.0, -2.0)));
+    // sf::BodyPhysicsSettings sphere_physics;
+    // sphere_physics.mode = sf::BodyPhysicsMode::SUBMERGED;
+    // sf::Sphere *sph = new sf::Sphere("FloatingBall", sphere_physics, 0.2, sf::I4(), "Foam", "red");
+    // AddSolidEntity(sph, sf::Transform(sf::IQ(), sf::Vector3(0.0, 1.0, -2.0)));
 
     // Create AUV as a box (1m long, 0.1m wide, 0.1m tall)
     // Box naturally has X=length, Y=width, Z=height - aligned with world frame
-    sf::BodyPhysicsSettings phy;
-    phy.mode = sf::BodyPhysicsMode::SUBMERGED;
+    // sf::BodyPhysicsSettings phy;
+    // phy.mode = sf::BodyPhysicsMode::SUBMERGED;
 
     // Shift origin to lower center of mass - shift origin upward in local frame (negative Z)
     sf::Transform boxOrigin(sf::IQ(), sf::Vector3(0.0, 0.0, -0.04)); // Shift COM 2cm lower
 
-    sf::Box *auv = new sf::Box("SimpleAUV", phy, sf::Vector3(1.0, 0.1, 0.1), boxOrigin, "AUVBody", "yellow");
-    AddSolidEntity(auv, sf::Transform(sf::IQ(), sf::Vector3(0.0, 0.0, -1.0)));
+    // sf::Box *auv = new sf::Box("SimpleAUV", phy, sf::Vector3(1.0, 0.1, 0.1), boxOrigin, "AUVBody", "yellow");
+    // AddSolidEntity(auv, sf::Transform(sf::IQ(), sf::Vector3(0.0, 0.0, -1.0)));
 
-    // Thruster location in box's local frame
-    sf::Quaternion thrusterRotation = sf::Quaternion::getIdentity();
-    thrusterRotation.setEulerZYX(0, 0, M_PI / 2.0); // 90° rotation around Y-axis
-    sf::Transform thrusterTransform(thrusterRotation, sf::Vector3(-0.5, 0.0, 0.0));
-    // sf::Transform thrusterTransform(sf::IQ(), sf::Vector3(0.0, 0.0, -0.5));
+    // // Thruster location in box's local frame
+    // sf::Quaternion thrusterRotation = sf::Quaternion::getIdentity();
+    // thrusterRotation.setEulerZYX(0, 0, M_PI / 2.0); // 90° rotation around Y-axis
+    // sf::Transform thrusterTransform(thrusterRotation, sf::Vector3(-0.5, 0.0, 0.0));
+    // // sf::Transform thrusterTransform(sf::IQ(), sf::Vector3(0.0, 0.0, -0.5));
 
-    // Add thruster at back - pushes along +X (forward)
-    sf::Push *mainThruster = new sf::Push("MainThruster", false);
-    mainThruster->setForceLimits(-10.0, 30.0);
-    mainThruster->AttachToSolid(auv, thrusterTransform);
-    AddActuator(mainThruster);
+    // // Add thruster at back - pushes along +X (forward)
+    // sf::Push *mainThruster = new sf::Push("MainThruster", false);
+    // mainThruster->setForceLimits(-10.0, 30.0);
+    // mainThruster->AttachToSolid(auv, thrusterTransform);
+    // AddActuator(mainThruster);
 }
